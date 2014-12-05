@@ -1,6 +1,44 @@
 Rails.application.routes.draw do
-  devise_for :users
+
+  mount RailsAdmin::Engine => '/admin', as: 'rails_admin'
+  resources :seminars
+
+  resources :assigns
+
+  resources :histories
+
+  resources :statuses
+
+  resources :roles
+
+  resources :acquisitions
+
+  resources :missions
+
+  resources :levels
+
+  resources :categories
+
+#  devise_for :users
+
+  devise_for :users, skip: [:registrations]
+    as :user do
+      get '/users/edit' => 'devise/registrations#edit', :as => 'edit_user_registration'
+      put   '/users'    => 'devise/registrations#update', :as => 'user_registration'
+    end
+
+  get '/users'  => 'users#index', as: :users
+  get '/users/:fpno'  => 'users#show', as: :user
+  get '/users/:fpno/histories'  => 'users#histories', as: :user_histories
+
+  get '/about'   => 'welcome#about',   as: :about
+  get '/contact' => 'welcome#contact', as: :contact
+
+  mount Aoca::API => '/api'
+
   root 'welcome#index'
+
+  match "*anything" => "welcome#not_found", via: :get
 
   # The priority is based upon order of creation: first created -> highest priority.
   # See how all your routes lay out with "rake routes".
